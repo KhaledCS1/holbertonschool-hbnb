@@ -1,0 +1,75 @@
+classDiagram
+    class BaseModel {
+        <<abstract>>
+        +String id
+        +DateTime created_at
+        +DateTime updated_at
+        +save()
+        +update()
+        +delete()
+    }
+    
+    class User {
+        +String first_name
+        +String last_name
+        +String email
+        +String password
+        +Boolean is_admin
+        +List~Place~ places
+        +List~Review~ reviews
+        +register()
+        +authenticate()
+        +update_profile()
+        +delete_account()
+        +get_places()
+        +get_reviews()
+    }
+    
+    class Place {
+        +String title
+        +String description
+        +Float price
+        +Float latitude
+        +Float longitude
+        +User owner
+        +List~Review~ reviews
+        +List~Amenity~ amenities
+        +create()
+        +update_details()
+        +delete()
+        +add_amenity(amenity)
+        +remove_amenity(amenity)
+        +get_reviews()
+        +calculate_average_rating()
+    }
+    
+    class Review {
+        +Integer rating
+        +String comment
+        +User user
+        +Place place
+        +create()
+        +update()
+        +delete()
+        +validate_rating()
+    }
+    
+    class Amenity {
+        +String name
+        +String description
+        +List~Place~ places
+        +create()
+        +update()
+        +delete()
+        +get_places()
+    }
+    
+    BaseModel <|-- User : inherits
+    BaseModel <|-- Place : inherits
+    BaseModel <|-- Review : inherits
+    BaseModel <|-- Amenity : inherits
+    
+    User "1" --> "0..*" Place : owns
+    User "1" --> "0..*" Review : writes
+    Place "1" --> "0..*" Review : has
+    Place "0..*" <--> "0..*" Amenity : has

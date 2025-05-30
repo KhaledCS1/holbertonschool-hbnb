@@ -62,3 +62,23 @@ The package diagram shows the organization of the application components and the
 - See `package_diagram.mmd` for the detailed Mermaid.js diagram
 - See `uml_package_diagram.mmd` for the UML package diagram
 - See `architecture_notes.md` for detailed explanations
+
+## Task 1: Detailed Class Diagram for Business Logic Layer
+
+The class diagram for the Business Logic Layer shows the detailed structure of the core entities and their relationships.
+
+### Key Entities
+- **BaseModel**: Abstract base class providing common attributes (id, created_at, updated_at)
+- **User**: Manages user accounts and authentication
+- **Place**: Represents properties that can be listed
+- **Review**: Handles user reviews for places
+- **Amenity**: Manages amenities that can be associated with places
+
+### Relationships
+- Inheritance: All entities inherit from BaseModel
+- User owns Place (1 to many)
+- User writes Review (1 to many)
+- Place has Review (1 to many)
+- Place has Amenity (many to many)
+
+See `class_diagram.mmd` for the detailed UML class diagram and `class_diagram_notes.md` for comprehensive explanations.
