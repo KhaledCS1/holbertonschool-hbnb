@@ -1,0 +1,55 @@
+%%{init: {'theme':'base'}}%%
+graph TB
+    subgraph "Presentation Layer"
+        API[API Endpoints<br/>- User endpoints<br/>- Place endpoints<br/>- Review endpoints<br/>- Amenity endpoints]
+        Services[Services<br/>- Request handling<br/>- Response formatting<br/>- Validation]
+    end
+    
+    subgraph "Facade Pattern"
+        Facade[Facade Interface<br/>- userOperations()<br/>- placeOperations()<br/>- reviewOperations()<br/>- amenityOperations()]
+    end
+    
+    subgraph "Business Logic Layer"
+        UserModel[User Model<br/>- Registration<br/>- Authentication<br/>- Profile management]
+        PlaceModel[Place Model<br/>- CRUD operations<br/>- Amenity associations<br/>- Owner relationships]
+        ReviewModel[Review Model<br/>- Rating validation<br/>- User associations<br/>- Place associations]
+        AmenityModel[Amenity Model<br/>- CRUD operations<br/>- Place associations]
+    end
+    
+    subgraph "Persistence Layer"
+        UserRepo[User Repository<br/>- Create/Read/Update/Delete<br/>- Query methods]
+        PlaceRepo[Place Repository<br/>- Create/Read/Update/Delete<br/>- Query methods]
+        ReviewRepo[Review Repository<br/>- Create/Read/Update/Delete<br/>- Query methods]
+        AmenityRepo[Amenity Repository<br/>- Create/Read/Update/Delete<br/>- Query methods]
+        DB[(Database<br/>- Tables<br/>- Relationships<br/>- Indexes)]
+    end
+    
+    API --> Services
+    Services --> Facade
+    Facade --> UserModel
+    Facade --> PlaceModel
+    Facade --> ReviewModel
+    Facade --> AmenityModel
+    
+    UserModel --> UserRepo
+    PlaceModel --> PlaceRepo
+    ReviewModel --> ReviewRepo
+    AmenityModel --> AmenityRepo
+    
+    UserRepo --> DB
+    PlaceRepo --> DB
+    ReviewRepo --> DB
+    AmenityRepo --> DB
+    
+    style API fill:#e1f5e1
+    style Services fill:#e1f5e1
+    style Facade fill:#fff2cc
+    style UserModel fill:#e1e1f5
+    style PlaceModel fill:#e1e1f5
+    style ReviewModel fill:#e1e1f5
+    style AmenityModel fill:#e1e1f5
+    style UserRepo fill:#f5e1e1
+    style PlaceRepo fill:#f5e1e1
+    style ReviewRepo fill:#f5e1e1
+    style AmenityRepo fill:#f5e1e1
+    style DB fill:#f5e1e1

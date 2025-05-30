@@ -1,0 +1,81 @@
+classDiagram
+    class PresentationLayer {
+        <<package>>
+        ____________________
+        API Endpoints
+        ____________________
+        - User Management API
+        - Place Management API  
+        - Review Management API
+        - Amenity Management API
+        ____________________
+        Services
+        ____________________
+        - UserService
+        - PlaceService
+        - ReviewService
+        - AmenityService
+    }
+    
+    class FacadeInterface {
+        <<interface>>
+        +userOperations(operation, data)
+        +placeOperations(operation, data)
+        +reviewOperations(operation, data)
+        +amenityOperations(operation, data)
+        +validateRequest(request)
+        +formatResponse(data)
+    }
+    
+    class BusinessLogicLayer {
+        <<package>>
+        ____________________
+        Entity Models
+        ____________________
+        - User Model
+        - Place Model
+        - Review Model
+        - Amenity Model
+        ____________________
+        Business Rules
+        ____________________
+        - Validation Logic
+        - Relationship Management
+        - Permission Checks
+    }
+    
+    class PersistenceLayer {
+        <<package>>
+        ____________________
+        Repositories
+        ____________________
+        - UserRepository
+        - PlaceRepository
+        - ReviewRepository
+        - AmenityRepository
+        ____________________
+        Database Interface
+        ____________________
+        - Connection Management
+        - Transaction Handling
+        - Query Execution
+    }
+    
+    class Database {
+        <<database>>
+        +users_table
+        +places_table
+        +reviews_table
+        +amenities_table
+        +place_amenities_table
+    }
+    
+    PresentationLayer ..> FacadeInterface : uses
+    FacadeInterface ..> BusinessLogicLayer : delegates to
+    BusinessLogicLayer ..> PersistenceLayer : persists via
+    PersistenceLayer --> Database : stores in
+    
+    note for PresentationLayer "Handles external communication\nand user interactions"
+    note for FacadeInterface "Simplifies complex subsystem\ninteractions"
+    note for BusinessLogicLayer "Contains core application\nlogic and rules"
+    note for PersistenceLayer "Manages data storage\nand retrieval"
