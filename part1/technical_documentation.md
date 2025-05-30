@@ -334,8 +334,6 @@ Regular reviews ensure the documentation remains accurate and valuable throughou
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: [Current Date]  
 **Authors**: 
 - Suhail Alaboud
 - Khaled Almimoni
