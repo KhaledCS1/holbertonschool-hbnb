@@ -82,3 +82,24 @@ The class diagram for the Business Logic Layer shows the detailed structure of t
 - Place has Amenity (many to many)
 
 See `class_diagram.mmd` for the detailed UML class diagram and `class_diagram_notes.md` for comprehensive explanations.
+
+## Task 2: Sequence Diagrams for API Calls
+
+Four sequence diagrams have been created to illustrate the interaction flow between layers for key API operations:
+
+1. **User Registration**: Shows the process of creating a new user account
+2. **Place Creation**: Demonstrates how users create property listings
+3. **Review Submission**: Illustrates the review creation process
+4. **Fetching Places**: Shows how filtered place lists are retrieved
+
+Each diagram depicts the communication between:
+- Presentation Layer (API & Services)
+- Business Logic Layer (Models) via Facade Pattern
+- Persistence Layer (Repositories & Database)
+
+See the following files:
+- `user_registration_sequence.mmd` - User registration flow
+- `place_creation_sequence.mmd` - Place creation flow
+- `review_submission_sequence.mmd` - Review submission flow
+- `fetch_places_sequence.mmd` - Places retrieval flow
+- `sequence_diagrams_notes.md` - Detailed explanations for all sequences
