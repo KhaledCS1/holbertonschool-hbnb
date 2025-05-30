@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant Client
+    participant API as API Layer
+    participant Service as PlaceService
+    participant Facade
+    participant PlaceModel as Place Model
+    participant PlaceRepo as Place Repository
+    participant AmenityRepo as Amenity Repository
+    participant DB as Database
+
+    Client->>API: GET /api/places?criteria
+    API->>Service: getPlaces(criteria)
+    Service->>Service: validateCriteria(criteria)
+    Service->>Facade: placeOperations('list', criteria)
+    Facade->>PlaceModel: findByCriteria(criteria)
+    PlaceModel->>PlaceRepo: query(criteria)
+    PlaceRepo->>DB: SELECT FROM places WHERE criteria
+    DB-->>PlaceRepo: Places data
+    PlaceRepo-->>PlaceModel: List of places
+    
+    loop For each place
+        PlaceModel->>AmenityRepo: getAmenitiesByPlaceId(placeId)
+        AmenityRepo->>DB: SELECT FROM amenities JOIN place_amenities
+        DB-->>AmenityRepo: Amenities data
+        AmenityRepo-->>PlaceModel: Amenities list
+        PlaceModel->>PlaceModel: attachAmenities()
+    end
+    
+    PlaceModel-->>Facade: Places with amenities
+    Facade-->>Service: Places list
+    Service->>Service: formatResponse(places)
+    Service-->>API: Formatted places
+    API-->>Client: 200 OK + Places data

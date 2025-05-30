@@ -1,0 +1,39 @@
+sequenceDiagram
+    participant Client
+    participant API as API Layer
+    participant Service as ReviewService
+    participant Facade
+    participant ReviewModel as Review Model
+    participant PlaceModel as Place Model
+    participant UserModel as User Model
+    participant ReviewRepo as Review Repository
+    participant DB as Database
+
+    Client->>API: POST /api/places/{placeId}/reviews
+    API->>Service: submitReview(reviewData, placeId, userId)
+    Service->>Service: validateInput(reviewData)
+    Service->>Facade: placeOperations('getPlace', placeId)
+    Facade->>PlaceModel: findById(placeId)
+    PlaceModel->>DB: SELECT FROM places
+    DB-->>PlaceModel: Place data
+    PlaceModel-->>Facade: Place object
+    Service->>Facade: userOperations('getUser', userId)
+    Facade->>UserModel: findById(userId)
+    UserModel->>DB: SELECT FROM users
+    DB-->>UserModel: User data
+    UserModel-->>Facade: User object
+    Facade-->>Service: User and Place verified
+    Service->>Facade: reviewOperations('create', reviewData)
+    Facade->>ReviewModel: new Review(reviewData)
+    ReviewModel->>ReviewModel: validateRating()
+    ReviewModel->>ReviewModel: setUser(user)
+    ReviewModel->>ReviewModel: setPlace(place)
+    Facade->>ReviewModel: save()
+    ReviewModel->>ReviewRepo: create(reviewInstance)
+    ReviewRepo->>DB: INSERT INTO reviews
+    DB-->>ReviewRepo: Success
+    ReviewRepo-->>ReviewModel: Review saved
+    ReviewModel-->>Facade: Review object
+    Facade-->>Service: Review created
+    Service-->>API: Success response
+    API-->>Client: 201 Created + Review data

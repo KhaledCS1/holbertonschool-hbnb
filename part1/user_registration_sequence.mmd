@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant Client
+    participant API as API Layer
+    participant Service as UserService
+    participant Facade
+    participant UserModel as User Model
+    participant UserRepo as User Repository
+    participant DB as Database
+
+    Client->>API: POST /api/users/register
+    API->>Service: registerUser(userData)
+    Service->>Service: validateInput(userData)
+    Service->>Facade: userOperations('register', userData)
+    Facade->>UserModel: new User(userData)
+    UserModel->>UserModel: validateEmail()
+    UserModel->>UserModel: hashPassword()
+    Facade->>UserModel: save()
+    UserModel->>UserRepo: create(userInstance)
+    UserRepo->>DB: INSERT INTO users
+    DB-->>UserRepo: Success
+    UserRepo-->>UserModel: User saved
+    UserModel-->>Facade: User object
+    Facade-->>Service: User created
+    Service-->>API: Success response
+    API-->>Client: 201 Created + User data

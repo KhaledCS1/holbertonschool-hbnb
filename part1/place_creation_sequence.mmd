@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant Client
+    participant API as API Layer
+    participant Service as PlaceService
+    participant Facade
+    participant PlaceModel as Place Model
+    participant UserModel as User Model
+    participant PlaceRepo as Place Repository
+    participant DB as Database
+
+    Client->>API: POST /api/places
+    API->>Service: createPlace(placeData, userId)
+    Service->>Service: validateInput(placeData)
+    Service->>Facade: userOperations('getUser', userId)
+    Facade->>UserModel: findById(userId)
+    UserModel->>DB: SELECT FROM users
+    DB-->>UserModel: User data
+    UserModel-->>Facade: User object
+    Facade-->>Service: User verified
+    Service->>Facade: placeOperations('create', placeData)
+    Facade->>PlaceModel: new Place(placeData)
+    PlaceModel->>PlaceModel: validateCoordinates()
+    PlaceModel->>PlaceModel: setOwner(user)
+    Facade->>PlaceModel: save()
+    PlaceModel->>PlaceRepo: create(placeInstance)
+    PlaceRepo->>DB: INSERT INTO places
+    DB-->>PlaceRepo: Success
+    PlaceRepo-->>PlaceModel: Place saved
+    PlaceModel-->>Facade: Place object
+    Facade-->>Service: Place created
+    Service-->>API: Success response
+    API-->>Client: 201 Created + Place data
