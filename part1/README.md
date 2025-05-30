@@ -1,5 +1,10 @@
 # HBnB Evolution - Part 1: Technical Documentation
 
+## Team Members
+- Suhail Alaboud
+- Khaled Almimoni
+- Abrar Almukhlifi
+
 ## Task 0: High-Level Package Diagram
 
 This document contains the high-level package diagram for the HBnB Evolution application, illustrating the three-layer architecture and communication via the facade pattern.
@@ -103,3 +108,18 @@ See the following files:
 - `review_submission_sequence.mmd` - Review submission flow
 - `fetch_places_sequence.mmd` - Places retrieval flow
 - `sequence_diagrams_notes.md` - Detailed explanations for all sequences
+
+## Task 3: Documentation Compilation
+
+A comprehensive technical document has been created that combines all diagrams and explanatory notes from previous tasks into a single, cohesive reference document.
+
+### Document Contents:
+1. **Introduction**: Project overview and document purpose
+2. **High-Level Architecture**: Package diagrams and layer explanations
+3. **Business Logic Layer**: Class diagrams and entity specifications
+4. **API Interaction Flow**: Sequence diagrams for all API operations
+5. **Implementation Guidelines**: Best practices and next steps
+
+The complete technical documentation serves as the definitive blueprint for the HBnB Evolution project implementation.
+
+See `technical_documentation.md` for the complete compiled documentation.
