@@ -1,16 +1,12 @@
 classDiagram
     class PresentationLayer {
         <<package>>
-        ____________________
         API Endpoints
-        ____________________
         - User Management API
         - Place Management API  
         - Review Management API
         - Amenity Management API
-        ____________________
         Services
-        ____________________
         - UserService
         - PlaceService
         - ReviewService
@@ -29,16 +25,12 @@ classDiagram
     
     class BusinessLogicLayer {
         <<package>>
-        ____________________
         Entity Models
-        ____________________
         - User Model
         - Place Model
         - Review Model
         - Amenity Model
-        ____________________
         Business Rules
-        ____________________
         - Validation Logic
         - Relationship Management
         - Permission Checks
@@ -46,16 +38,12 @@ classDiagram
     
     class PersistenceLayer {
         <<package>>
-        ____________________
         Repositories
-        ____________________
         - UserRepository
         - PlaceRepository
         - ReviewRepository
         - AmenityRepository
-        ____________________
         Database Interface
-        ____________________
         - Connection Management
         - Transaction Handling
         - Query Execution
@@ -75,7 +63,7 @@ classDiagram
     BusinessLogicLayer ..> PersistenceLayer : persists via
     PersistenceLayer --> Database : stores in
     
-    note for PresentationLayer "Handles external communication\nand user interactions"
-    note for FacadeInterface "Simplifies complex subsystem\ninteractions"
-    note for BusinessLogicLayer "Contains core application\nlogic and rules"
-    note for PersistenceLayer "Manages data storage\nand retrieval"
+    note for PresentationLayer "Handles external communication and user interactions"
+    note for FacadeInterface "Simplifies complex subsystem interactions"
+    note for BusinessLogicLayer "Contains core application logic and rules"
+    note for PersistenceLayer "Manages data storage and retrieval"
