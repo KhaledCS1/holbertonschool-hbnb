@@ -5,17 +5,8 @@ class Review(BaseModel):
     """Review model representing a place review"""
     
     def __init__(self, text, rating, place, user):
-        """Initialize Review instance
-        
-        Args:
-            text (str): Review text content
-            rating (int): Rating from 1 to 5
-            place (Place): Place being reviewed
-            user (User): User who wrote the review
-        """
+        """Initialize Review instance"""
         super().__init__()
-        
-        # Validate and set attributes
         self.text = self._validate_text(text)
         self.rating = self._validate_rating(rating)
         self.place = place
@@ -26,7 +17,6 @@ class Review(BaseModel):
         """Validate review text"""
         if not text or not text.strip():
             raise ValueError("Review text is required")
-        
         return text.strip()
     
     @staticmethod
@@ -34,15 +24,12 @@ class Review(BaseModel):
         """Validate rating"""
         if not isinstance(rating, int):
             raise ValueError("Rating must be an integer")
-        
         if not 1 <= rating <= 5:
             raise ValueError("Rating must be between 1 and 5")
-        
         return rating
     
     def update(self, data):
         """Update review attributes with validation"""
-        # Validate data before updating
         if 'text' in data:
             data['text'] = self._validate_text(data['text'])
         if 'rating' in data:

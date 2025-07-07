@@ -1,9 +1,9 @@
-"""Base model class with common attributes and methods"""
+"""Base model class with common attributes"""
 import uuid
 from datetime import datetime
 
 class BaseModel:
-    """Base class for all models with common attributes"""
+    """Base class for all models"""
     
     def __init__(self):
         """Initialize base attributes"""
@@ -12,16 +12,15 @@ class BaseModel:
         self.updated_at = datetime.now()
 
     def save(self):
-        """Update the updated_at timestamp whenever the object is modified"""
+        """Update the updated_at timestamp"""
         self.updated_at = datetime.now()
 
     def update(self, data):
-        """Update the attributes of the object based on the provided dictionary"""
-        # Update only allowed attributes (exclude id, created_at, updated_at)
+        """Update object attributes"""
         for key, value in data.items():
             if hasattr(self, key) and key not in ['id', 'created_at', 'updated_at']:
                 setattr(self, key, value)
-        self.save()  # Update the updated_at timestamp
+        self.save()
 
     def to_dict(self):
         """Convert object to dictionary"""
