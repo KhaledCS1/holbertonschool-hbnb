@@ -1,0 +1,13 @@
+﻿flask==2.3.2
+flask-restx==1.1.0
+flask-bcrypt==1.0.1
+flask-jwt-extended==4.5.2
+flask-sqlalchemy==3.0.5
+flask-cors==4.0.0
+SQLAlchemy==2.0.19
+PyMySQL==1.1.0
+pytest==7.4.0
+pytest-flask==1.2.0
+python-dotenv==1.0.0
+email-validator==2.0.0
+Werkzeug==2.3.6
