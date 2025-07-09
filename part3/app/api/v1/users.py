@@ -1,4 +1,6 @@
 ﻿"""User API endpoints"""
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from flask_restx import Namespace, Resource, fields
 from app.services.facade import HBnBFacade
 
@@ -58,35 +60,37 @@ class UserList(Resource):
 
 @api.route('/<string:user_id>')
 class UserResource(Resource):
-    @api.response(200, 'User details retrieved successfully')
-    @api.response(404, 'User not found')
-    def get(self, user_id):
-        """Get user details by ID"""
-        user = facade.get_user(user_id)
-        if not user:
-            api.abort(404, "User not found")
-        # Return user data WITHOUT password
-        return {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'created_at': user.created_at.isoformat(),
-            'updated_at': user.updated_at.isoformat()
-        }, 200
+    # ... keep existing GET method ...
     
+    @jwt_required()
     @api.expect(user_update_model, validate=True)
     @api.response(200, 'User updated successfully')
+    @api.response(403, 'Unauthorized action')
     @api.response(404, 'User not found')
-    @api.response(400, 'Invalid input data')
+    @api.response(400, 'Invalid input data or trying to modify email/password')
+    @api.response(401, 'Authentication required')
+    @api.doc(security='Bearer')
     def put(self, user_id):
-        """Update a user's information"""
+        """Update user information (Owner only, cannot modify email or password)"""
         try:
+            current_user_id = get_jwt_identity()
+            
+            # Check if user is trying to modify their own data
+            if user_id != current_user_id:
+                api.abort(403, "Unauthorized action")
+            
             user_data = api.payload
+            
+            # Prevent modification of email and password
+            if 'email' in user_data:
+                api.abort(400, "You cannot modify email or password")
+            if 'password' in user_data:
+                api.abort(400, "You cannot modify email or password")
+            
             updated_user = facade.update_user(user_id, user_data)
             if not updated_user:
                 api.abort(404, "User not found")
-            # Return updated user WITHOUT password
+            
             return {
                 'id': updated_user.id,
                 'first_name': updated_user.first_name,

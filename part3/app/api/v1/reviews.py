@@ -1,5 +1,6 @@
 ﻿"""Review API endpoints"""
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services.facade import HBnBFacade
 
 api = Namespace('reviews', description='Review operations')
@@ -9,19 +10,47 @@ facade = HBnBFacade()
 review_model = api.model('Review', {
     'text': fields.String(required=True, description='Text of the review'),
     'rating': fields.Integer(required=True, description='Rating (1-5)'),
-    'user_id': fields.String(required=True, description='ID of the user'),
     'place_id': fields.String(required=True, description='ID of the place')
+})
+
+review_update_model = api.model('ReviewUpdate', {
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating (1-5)')
 })
 
 @api.route('/')
 class ReviewList(Resource):
+    @jwt_required()
     @api.expect(review_model, validate=True)
     @api.response(201, 'Review successfully created')
-    @api.response(400, 'Invalid input data')
+    @api.response(400, 'Invalid input data or review already exists')
+    @api.response(401, 'Authentication required')
+    @api.doc(security='Bearer')
     def post(self):
-        """Register a new review"""
+        """Create a new review (Authenticated users only)"""
         try:
+            current_user_id = get_jwt_identity()
             review_data = api.payload
+            place_id = review_data.get('place_id')
+            
+            # Get the place
+            place = facade.get_place(place_id)
+            if not place:
+                api.abort(400, "Place not found")
+            
+            # Check if user owns the place
+            if place.owner.id == current_user_id:
+                api.abort(400, "You cannot review your own place")
+            
+            # Check if user already reviewed this place
+            user_reviews = facade.get_all_reviews()
+            for review in user_reviews:
+                if review.user.id == current_user_id and review.place.id == place_id:
+                    api.abort(400, "You have already reviewed this place")
+            
+            # Add user_id to review data
+            review_data['user_id'] = current_user_id
+            
             new_review = facade.create_review(review_data)
             return {
                 'id': new_review.id,
@@ -40,7 +69,9 @@ class ReviewList(Resource):
         return [{
             'id': review.id,
             'text': review.text,
-            'rating': review.rating
+            'rating': review.rating,
+            'user_id': review.user.id if review.user else None,
+            'place_id': review.place.id if review.place else None
         } for review in reviews], 200
 
 @api.route('/<string:review_id>')
@@ -60,25 +91,59 @@ class ReviewResource(Resource):
             'place_id': review.place.id if review.place else None
         }, 200
     
-    @api.expect(review_model, validate=True)
+    @jwt_required()
+    @api.expect(review_update_model, validate=True)
     @api.response(200, 'Review updated successfully')
+    @api.response(403, 'Unauthorized action')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
+    @api.response(401, 'Authentication required')
+    @api.doc(security='Bearer')
     def put(self, review_id):
-        """Update a review"""
+        """Update a review (Owner only)"""
         try:
+            current_user_id = get_jwt_identity()
+            review = facade.get_review(review_id)
+            
+            if not review:
+                api.abort(404, "Review not found")
+            
+            # Check if the current user created the review
+            if review.user.id != current_user_id:
+                api.abort(403, "Unauthorized action")
+            
             review_data = api.payload
             updated_review = facade.update_review(review_id, review_data)
-            if not updated_review:
-                api.abort(404, "Review not found")
-            return {'message': 'Review updated successfully'}, 200
+            
+            return {
+                'message': 'Review updated successfully',
+                'review': {
+                    'id': updated_review.id,
+                    'text': updated_review.text,
+                    'rating': updated_review.rating
+                }
+            }, 200
         except ValueError as e:
             api.abort(400, str(e))
     
+    @jwt_required()
     @api.response(200, 'Review deleted successfully')
+    @api.response(403, 'Unauthorized action')
     @api.response(404, 'Review not found')
+    @api.response(401, 'Authentication required')
+    @api.doc(security='Bearer')
     def delete(self, review_id):
-        """Delete a review"""
+        """Delete a review (Owner only)"""
+        current_user_id = get_jwt_identity()
+        review = facade.get_review(review_id)
+        
+        if not review:
+            api.abort(404, "Review not found")
+        
+        # Check if the current user created the review
+        if review.user.id != current_user_id:
+            api.abort(403, "Unauthorized action")
+        
         if facade.delete_review(review_id):
             return {'message': 'Review deleted successfully'}, 200
         api.abort(404, "Review not found")
