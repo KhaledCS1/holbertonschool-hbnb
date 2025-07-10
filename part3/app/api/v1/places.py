@@ -1,6 +1,6 @@
 ﻿"""Place API endpoints"""
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services.facade import HBnBFacade
 
 api = Namespace('places', description='Place operations')
@@ -109,16 +109,18 @@ class PlaceResource(Resource):
     @api.response(401, 'Authentication required')
     @api.doc(security='Bearer')
     def put(self, place_id):
-        """Update a place (Owner only)"""
+        """Update a place (Owner or Admin only)"""
         try:
             current_user_id = get_jwt_identity()
-            place = facade.get_place(place_id)
+            current_user_claims = get_jwt()
+            is_admin = current_user_claims.get('is_admin', False)
             
+            place = facade.get_place(place_id)
             if not place:
                 api.abort(404, "Place not found")
             
-            # Check if the current user is the owner
-            if place.owner.id != current_user_id:
+            # Check if the current user is the owner OR admin
+            if not is_admin and place.owner.id != current_user_id:
                 api.abort(403, "Unauthorized action")
             
             place_data = api.payload

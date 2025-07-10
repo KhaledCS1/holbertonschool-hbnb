@@ -1,6 +1,6 @@
 ﻿"""Review API endpoints"""
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services.facade import HBnBFacade
 
 api = Namespace('reviews', description='Review operations')
@@ -30,6 +30,9 @@ class ReviewList(Resource):
         """Create a new review (Authenticated users only)"""
         try:
             current_user_id = get_jwt_identity()
+            current_user_claims = get_jwt()
+            is_admin = current_user_claims.get('is_admin', False)
+            
             review_data = api.payload
             place_id = review_data.get('place_id')
             
@@ -38,15 +41,16 @@ class ReviewList(Resource):
             if not place:
                 api.abort(400, "Place not found")
             
-            # Check if user owns the place
-            if place.owner.id == current_user_id:
+            # Regular users cannot review their own places
+            if not is_admin and place.owner.id == current_user_id:
                 api.abort(400, "You cannot review your own place")
             
-            # Check if user already reviewed this place
-            user_reviews = facade.get_all_reviews()
-            for review in user_reviews:
-                if review.user.id == current_user_id and review.place.id == place_id:
-                    api.abort(400, "You have already reviewed this place")
+            # Regular users cannot review same place twice
+            if not is_admin:
+                user_reviews = facade.get_all_reviews()
+                for review in user_reviews:
+                    if review.user.id == current_user_id and review.place.id == place_id:
+                        api.abort(400, "You have already reviewed this place")
             
             # Add user_id to review data
             review_data['user_id'] = current_user_id
@@ -100,16 +104,18 @@ class ReviewResource(Resource):
     @api.response(401, 'Authentication required')
     @api.doc(security='Bearer')
     def put(self, review_id):
-        """Update a review (Owner only)"""
+        """Update a review (Owner or Admin only)"""
         try:
             current_user_id = get_jwt_identity()
-            review = facade.get_review(review_id)
+            current_user_claims = get_jwt()
+            is_admin = current_user_claims.get('is_admin', False)
             
+            review = facade.get_review(review_id)
             if not review:
                 api.abort(404, "Review not found")
             
-            # Check if the current user created the review
-            if review.user.id != current_user_id:
+            # Check if the current user created the review OR is admin
+            if not is_admin and review.user.id != current_user_id:
                 api.abort(403, "Unauthorized action")
             
             review_data = api.payload
@@ -133,15 +139,17 @@ class ReviewResource(Resource):
     @api.response(401, 'Authentication required')
     @api.doc(security='Bearer')
     def delete(self, review_id):
-        """Delete a review (Owner only)"""
+        """Delete a review (Owner or Admin only)"""
         current_user_id = get_jwt_identity()
-        review = facade.get_review(review_id)
+        current_user_claims = get_jwt()
+        is_admin = current_user_claims.get('is_admin', False)
         
+        review = facade.get_review(review_id)
         if not review:
             api.abort(404, "Review not found")
         
-        # Check if the current user created the review
-        if review.user.id != current_user_id:
+        # Check if the current user created the review OR is admin
+        if not is_admin and review.user.id != current_user_id:
             api.abort(403, "Unauthorized action")
         
         if facade.delete_review(review_id):
