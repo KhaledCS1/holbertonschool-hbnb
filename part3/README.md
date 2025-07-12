@@ -1,4 +1,5 @@
 erDiagram
+
     USERS {
         CHAR(36) id PK
         VARCHAR first_name
