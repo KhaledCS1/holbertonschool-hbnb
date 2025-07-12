@@ -2,7 +2,7 @@
 Suhail Al-aboud <10675@holbertonstudents.com>
 Facade pattern implementation for simplified access to business logic
 """
-from app.persistence.repository import InMemoryRepository
+from app.persistence.sqlalchemy_repository import SQLAlchemyRepository
 from app.models.user import User
 from app.models.place import Place
 from app.models.review import Review
@@ -13,26 +13,23 @@ class HBnBFacade:
     """Facade class for managing all application operations."""
 
     def __init__(self):
-        """Initialize repositories for all entities."""
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
+        """Initialize repositories for all entities using SQLAlchemy."""
+        self.user_repo = SQLAlchemyRepository(User)
+        self.place_repo = SQLAlchemyRepository(Place)
+        self.review_repo = SQLAlchemyRepository(Review)
+        self.amenity_repo = SQLAlchemyRepository(Amenity)
 
     # ========== User Management ==========
 
     def create_user(self, user_data):
         """Create a new user."""
-        # Check if email already exists
         existing_user = self.get_user_by_email(user_data.get("email", ""))
         if existing_user:
             raise ValueError("Email already registered")
 
-        # Ensure password is provided
         if "password" not in user_data:
             raise ValueError("Password is required")
 
-        # Create new user (password will be hashed in User constructor)
         user = User(**user_data)
         self.user_repo.add(user)
         return user
@@ -55,7 +52,6 @@ class HBnBFacade:
         if not user:
             return None
 
-        # Check email uniqueness if email is being updated
         if "email" in user_data and user_data["email"].lower() != user.email:
             existing = self.get_user_by_email(user_data["email"])
             if existing:
@@ -68,7 +64,6 @@ class HBnBFacade:
 
     def create_place(self, place_data):
         """Create a new place."""
-        # Extract and validate owner
         owner_id = place_data.pop("owner_id", None)
         if not owner_id:
             raise ValueError("Owner ID is required")
@@ -77,7 +72,6 @@ class HBnBFacade:
         if not owner:
             raise ValueError("Owner not found")
 
-        # Create place
         place = Place(**place_data, owner=owner)
         self.place_repo.add(place)
         owner.add_place(place)
@@ -97,7 +91,6 @@ class HBnBFacade:
         if not place:
             return None
 
-        # Don't allow changing owner
         place_data.pop("owner_id", None)
         place_data.pop("owner", None)
 
@@ -108,7 +101,6 @@ class HBnBFacade:
 
     def create_review(self, review_data):
         """Create a new review."""
-        # Extract and validate user and place
         user_id = review_data.pop("user_id", None)
         place_id = review_data.pop("place_id", None)
 
@@ -123,7 +115,6 @@ class HBnBFacade:
         if not place:
             raise ValueError("Place not found")
 
-        # Create review
         review = Review(**review_data, place=place, user=user)
         self.review_repo.add(review)
         place.add_review(review)
@@ -159,7 +150,6 @@ class HBnBFacade:
         if not review:
             return False
 
-        # Remove from place's reviews list
         if review.place:
             review.place.reviews.remove(review)
 
