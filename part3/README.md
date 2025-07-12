@@ -1,5 +1,5 @@
 erDiagram
-    %% ===== Core Tables =====
+
     users {
         CHAR(36)  id           PK
         VARCHAR   first_name
@@ -47,9 +47,8 @@ erDiagram
         PK        (place_id, amenity_id)
     }
 
-    %% ===== Relationships =====
-    users   ||--o{ places        : owns
-    users   ||--o{ reviews       : writes
-    places  ||--o{ reviews       : receives
-    places  ||--o{ place_amenity : contains
-    amenities ||--o{ place_amenity : listed_in
+    users      ||--o{ places        : owns
+    users      ||--o{ reviews       : writes
+    places     ||--o{ reviews       : receives
+    places     ||--o{ place_amenity : contains
+    amenities  ||--o{ place_amenity : listed_in
