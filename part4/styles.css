@@ -1,0 +1,77 @@
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #f4f4f4;
+  color: #333;
+  padding: 20px;
+}
+header, nav, footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.logo {
+  height: 50px;
+}
+.login-button {
+  text-decoration: none;
+  padding: 8px 12px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+}
+nav a {
+  margin-right: 10px;
+  text-decoration: none;
+  color: #333;
+}
+main {
+  min-height: 60vh;
+}
+footer p {
+  text-align: center;
+  width: 100%;
+}
+
+/* Place and review cards */
+.place-card, .review-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin: 20px;
+  padding: 10px;
+  background-color: #fff;
+}
+.details-button {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Forms */
+.auth-form, .add-review {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.auth-form label, .add-review label {
+  margin-top: 10px;
+}
+.auth-form input, .add-review textarea, .add-review select {
+  padding: 8px;
+  margin-top: 5px;
+}
+.auth-form button, .add-review button {
+  margin-top: 15px;
+  padding: 10
