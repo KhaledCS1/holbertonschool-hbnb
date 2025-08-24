@@ -1,6 +1,7 @@
 <!--
 Author: TEAM Khaled
--->
+-->![Uploading HBNB.PNG…]()
+
 
 # HBNB Project
 
