@@ -1,8 +1,6 @@
-<!--
+<img width="1024" height="1024" alt="HBNB" src="https://github.com/user-attachments/assets/3294fcc6-365f-4fcd-ab8d-6b0800586db3" />
+
 Author: TEAM Khaled
--->![Uploading HBNB.PNG…]()
-
-
 # HBNB Project
 
 This repository contains the HBNB project. It is a comprehensive application that demonstrates the implementation of a booking platform similar to Airbnb.
