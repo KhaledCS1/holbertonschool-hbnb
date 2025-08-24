@@ -2,9 +2,9 @@
 Author: TEAM Khaled
 -->
 
-# Holberton School HBNB Project
+# HBNB Project
 
-This repository contains the HBNB project for Holberton School. It is a comprehensive application that demonstrates the implementation of a booking platform similar to Airbnb.
+This repository contains the HBNB project. It is a comprehensive application that demonstrates the implementation of a booking platform similar to Airbnb.
 
 ## Project Structure
 
